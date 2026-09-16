@@ -169,8 +169,7 @@ button, a { cursor: none; }
 .loader-chicken { width: min(34vw,290px); z-index:1; animation: bounce .65s ease-in-out infinite alternate; }
 .loader p { position:absolute; bottom: 8vh; z-index:1; color:var(--cream); font:700 clamp(1.2rem,3vw,2.2rem) var(--font-body); }
 .site-header { position:fixed; z-index:100; top:0; left:0; width:100%; display:flex; align-items:center; justify-content:space-between; padding:24px 3vw; background:linear-gradient(to bottom,color-mix(in oklab,var(--cream) 92%,transparent),transparent); }
-.brand-mark { color:var(--hot); font:900 clamp(1.5rem,3vw,2.7rem) var(--font-display); text-decoration:none; line-height:.7; -webkit-text-stroke:2px var(--cream); filter:drop-shadow(2px 3px 0 var(--ink)); }
-.brand-mark span { display:block; margin-top:9px; color:var(--ink); text-align:center; font:700 .55rem var(--font-body); -webkit-text-stroke:0; }
+.brand-mark{display:block;width:clamp(112px,14vw,190px);line-height:0;filter:drop-shadow(2px 3px 0 color-mix(in oklab,var(--ink) 24%,transparent))}.brand-mark img{display:block;width:100%;height:auto}
 .header-actions { display:flex; gap:8px; }
 .pill { height:44px; padding:0 20px; display:inline-flex; align-items:center; gap:8px; border-radius:999px; border:2px solid var(--hot); font:700 1rem var(--font-body); text-decoration:none; transition:.2s; }
 .pill-solid { background:var(--hot); color:var(--cream); }
