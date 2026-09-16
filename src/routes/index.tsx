@@ -67,7 +67,7 @@ function Index() {
       parallaxNodes.forEach((node) => {
         const rect = node.getBoundingClientRect();
         if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
-        const speed = Number(node.dataset.speed ?? 0.08);
+        const speed = Number(node.dataset["speed"] ?? 0.08);
         const offset = (rect.top + rect.height / 2 - viewportCenter) * speed;
         node.style.setProperty("--parallax-y", `${offset.toFixed(2)}px`);
       });
