@@ -29,6 +29,21 @@ const categories = [
   ["05", "FAMILY & VALUE", "PACKAGES", chickenPartyAsset.url],
 ];
 
+function WaveDivider({ tone }: { tone: "red" | "cream" | "yellow" }) {
+  return (
+    <div className={`wave wave-${tone}`} aria-hidden="true">
+      <div className="wave-runner">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+          <path d="M0 58C145 11 266 107 430 60C593 14 712 103 880 58C1048 13 1177 103 1440 47V120H0Z" />
+        </svg>
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+          <path d="M0 58C145 11 266 107 430 60C593 14 712 103 880 58C1048 13 1177 103 1440 47V120H0Z" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -45,11 +60,33 @@ function Index() {
       document.documentElement.style.setProperty("--mouse-x", `${event.clientX}px`);
       document.documentElement.style.setProperty("--mouse-y", `${event.clientY}px`);
     };
+    let frame = 0;
+    const parallaxNodes = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
+    const updateParallax = () => {
+      const viewportCenter = window.innerHeight / 2;
+      parallaxNodes.forEach((node) => {
+        const rect = node.getBoundingClientRect();
+        if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
+        const speed = Number(node.dataset["speed"] ?? 0.08);
+        const offset = (rect.top + rect.height / 2 - viewportCenter) * speed;
+        node.style.setProperty("--parallax-y", `${offset.toFixed(2)}px`);
+      });
+      frame = 0;
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateParallax);
+    };
+    updateParallax();
     window.addEventListener("mousemove", onMove);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       window.clearTimeout(timer);
       reveal.disconnect();
       window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -83,13 +120,13 @@ function Index() {
       </div>
 
       <section id="top" className="hero-section">
-        <div className="hero-kicker">READY TO CRUNCH!</div>
+        <div className="hero-kicker" data-parallax data-speed="-0.08">READY TO CRUNCH!</div>
         <h1 className="hero-title" aria-label="The First Oven Fried Chicken">
           <span>THE FIRST</span><span>OVEN FRIED</span><span className="hero-outline">CHICKEN</span>
         </h1>
-        <div className="sticker sticker-left">LEBIH<br />SEHAT</div>
-        <div className="sticker sticker-right">REN­YAH<br />& HALAL</div>
-        <img src={drumstickAsset.url} alt="Ayam oven-fried renyah LABBAIK Chicken" className="hero-chicken" />
+        <div className="sticker sticker-left" data-parallax data-speed="0.1">LEBIH<br />SEHAT</div>
+        <div className="sticker sticker-right" data-parallax data-speed="-0.12">REN­YAH<br />& HALAL</div>
+        <div className="hero-chicken-parallax" data-parallax data-speed="0.16"><img src={drumstickAsset.url} alt="Ayam oven-fried renyah LABBAIK Chicken" className="hero-chicken" /></div>
         <div className="hero-eye eye-left" /><div className="hero-eye eye-right" />
         <div className="hero-bottom">
           <p>Ayam crispy yang melewati proses oven membuat minyak berkurang dan lebih sehat.</p>
@@ -105,14 +142,14 @@ function Index() {
           <p>LABBAIK Chicken menghadirkan sensasi ayam crispy oven-fried yang lebih ringan, lebih renyah, dan selalu dibuat segar.</p>
           <a className="cta-button" href={orderUrl} target="_blank" rel="noreferrer">ORDER SEKARANG <ArrowUpRight /></a>
         </div>
-        <div className="chicken-collage" data-reveal>
-          <div className="photo-card card-one"><img src={chickenSpreadAsset.url} alt="Pilihan ayam crispy LABBAIK" /></div>
-          <div className="photo-card card-two"><img src={drumstickAsset.url} alt="Ayam crispy LABBAIK" /></div>
-          <div className="photo-card card-three"><img src={chickenPartyAsset.url} alt="Menu ayam LABBAIK" /></div>
+        <div className="chicken-collage">
+          <div className="photo-card card-one" data-reveal data-parallax data-speed="0.08"><img src={chickenSpreadAsset.url} alt="Pilihan ayam crispy LABBAIK" /></div>
+          <div className="photo-card card-two" data-reveal data-parallax data-speed="-0.11"><img src={drumstickAsset.url} alt="Ayam crispy LABBAIK" /></div>
+          <div className="photo-card card-three" data-reveal data-parallax data-speed="0.14"><img src={chickenPartyAsset.url} alt="Menu ayam LABBAIK" /></div>
         </div>
       </section>
 
-      <div className="wave wave-red" />
+      <WaveDivider tone="red" />
       <section className="experience-section">
         <div className="corner-notes left-note"><b>LESS OIL</b><span>OVEN-FRIED</span><span>ALWAYS FRESH</span></div>
         <div className="corner-notes right-note"><b>100% HALAL</b><span>HYGIENIC</span><span>TRUE CRUNCH</span></div>
@@ -120,28 +157,39 @@ function Index() {
           <div className="stamp stamp-light">THE EXPERIENCE</div>
           <h2>FOOD THAT<br />FEELS GOOD</h2>
         </div>
-        <img src={chickenPartyAsset.url} alt="Koleksi ayam crispy LABBAIK Chicken" className="experience-chicken" />
+        <div className="experience-chicken-parallax" data-parallax data-speed="0.13"><img src={chickenPartyAsset.url} alt="Koleksi ayam crispy LABBAIK Chicken" className="experience-chicken" /></div>
         <div className="scribble scribble-one">↘</div><div className="scribble scribble-two">YUM!</div>
         <div className="marquee"><div>CRISPY • HALAL • FRESH • OVEN-FRIED • CRISPY • HALAL • FRESH • OVEN-FRIED • </div></div>
       </section>
 
-      <div className="wave wave-cream" />
+      <WaveDivider tone="cream" />
       <section className="quality-section">
         <div className="quality-copy" data-reveal>
           <div className="stamp">PURE QUALITY</div>
           <h2>EVERY BITE<br />PACKED WITH<br /><span>CRUNCH</span></h2>
         </div>
-        <img src={drumstickAsset.url} className="float-chicken float-one" alt="Ayam LABBAIK renyah" />
-        <img src={drumstickAsset.url} className="float-chicken float-two" alt="Ayam LABBAIK oven-fried" />
+        <div className="float-chicken float-one" data-parallax data-speed="0.18"><img src={drumstickAsset.url} alt="Ayam LABBAIK renyah" /></div>
+        <div className="float-chicken float-two" data-parallax data-speed="-0.16"><img src={drumstickAsset.url} alt="Ayam LABBAIK oven-fried" /></div>
         <div className="quality-list"><span>01 / FRESHLY PREPARED</span><span>02 / OVEN FINISHED</span><span>03 / SERVED HOT</span></div>
       </section>
 
-      <div className="wave wave-yellow" />
+      <WaveDivider tone="yellow" />
       <section className="menu-section" id="menu">
         <div className="menu-heading" data-reveal>
           <div className="stamp stamp-dark">MENU KAMI</div>
           <h2>A FAVORITE<br />FOR EVERYONE</h2>
           <p>Pilihan menu terbaik kami—enak, segar, dan siap jadi favoritmu.</p>
+        </div>
+        <div className="flight-scene" data-reveal aria-hidden="true">
+          <svg className="flight-path" viewBox="0 0 1200 270" preserveAspectRatio="none">
+            <path d="M-40 235C170 5 370 27 515 142C692 281 861 271 1240 35" />
+          </svg>
+          <div className="flight-dashes" />
+          <span className="flight-dot dot-leaf">FRESH</span>
+          <span className="flight-dot dot-hot">HOT</span>
+          <span className="flight-dot dot-oven">OVEN</span>
+          <div className="flying-chicken"><img src={drumstickAsset.url} alt="" /></div>
+          <strong>CRUNCH ON THE MOVE!</strong>
         </div>
         <div className="menu-track">
           {categories.map(([number, top, bottom, image], index) => (
@@ -156,9 +204,9 @@ function Index() {
         </div>
       </section>
 
-      <div className="wave wave-cream-two" />
+      <WaveDivider tone="cream" />
       <section className="family-section" id="layanan">
-        <div className="family-visual" data-reveal><img src={chickenSpreadAsset.url} alt="Paket keluarga LABBAIK Chicken" /><span>SHARE THE<br />CRUNCH!</span></div>
+        <div className="family-visual" data-reveal data-parallax data-speed="0.08"><img src={chickenSpreadAsset.url} alt="Paket keluarga LABBAIK Chicken" /><span>SHARE THE<br />CRUNCH!</span></div>
         <div className="family-copy" data-reveal>
           <div className="stamp">FEEL AT HOME</div>
           <h2>GOOD FOOD.<br />WARM MOMENTS.</h2>
