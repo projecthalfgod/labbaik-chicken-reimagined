@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDown, ArrowUpRight, Instagram, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import drumstickAsset from "@/assets/Gambar_Codex_15_Sep_2026_18.55.17.png.asset.json";
 import chickenPartyAsset from "@/assets/Gambar_Codex_15_Sep_2026_14.09.01.png.asset.json";
 import chickenSpreadAsset from "@/assets/Gambar_Codex_15_Sep_2026_14.10.53.png.asset.json";
@@ -49,6 +49,7 @@ function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [cookies, setCookies] = useState(true);
+  const storyChickenRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setLoaded(true), 1250);
@@ -63,6 +64,51 @@ function Index() {
     };
     let frame = 0;
     const parallaxNodes = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
+    const storyStops = Array.from(document.querySelectorAll<HTMLElement>("[data-story-stop]"));
+    const desktopPoses = [
+      { x: 50, y: 52, scale: 1.34, rotate: -14, opacity: 1 },
+      { x: 76, y: 48, scale: 0.78, rotate: 18, opacity: 0.94 },
+      { x: 50, y: 53, scale: 1.02, rotate: -7, opacity: 0.96 },
+      { x: 18, y: 48, scale: 0.72, rotate: -31, opacity: 0.92 },
+      { x: 79, y: 39, scale: 0.65, rotate: 21, opacity: 0.92 },
+      { x: 27, y: 53, scale: 0.88, rotate: -9, opacity: 0.9 },
+      { x: 50, y: 82, scale: 0.45, rotate: 8, opacity: 0 },
+    ];
+    const mobilePoses = [
+      { x: 50, y: 49, scale: 1.1, rotate: -13, opacity: 1 },
+      { x: 78, y: 66, scale: 0.5, rotate: 20, opacity: 0.9 },
+      { x: 50, y: 58, scale: 0.68, rotate: -6, opacity: 0.94 },
+      { x: 21, y: 67, scale: 0.48, rotate: -27, opacity: 0.88 },
+      { x: 78, y: 68, scale: 0.46, rotate: 19, opacity: 0.88 },
+      { x: 27, y: 70, scale: 0.55, rotate: -8, opacity: 0.84 },
+      { x: 50, y: 84, scale: 0.35, rotate: 7, opacity: 0 },
+    ];
+    const mix = (from: number, to: number, amount: number) => from + (to - from) * amount;
+    const updateStoryChicken = () => {
+      const chicken = storyChickenRef.current;
+      if (!chicken || !storyStops.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const viewportMarker = window.scrollY + window.innerHeight * 0.5;
+      const anchors = storyStops.map((section, index) => {
+        const bounds = section.getBoundingClientRect();
+        const absoluteTop = bounds.top + window.scrollY;
+        return index === 0 ? absoluteTop : absoluteTop + bounds.height * 0.48;
+      });
+      let stage = 0;
+      while (stage < anchors.length - 1 && viewportMarker > anchors[stage + 1]) stage += 1;
+      const nextStage = Math.min(stage + 1, anchors.length - 1);
+      const span = Math.max(1, anchors[nextStage] - anchors[stage]);
+      const rawProgress = Math.min(1, Math.max(0, (viewportMarker - anchors[stage]) / span));
+      const eased = rawProgress * rawProgress * (3 - 2 * rawProgress);
+      const poses = window.innerWidth <= 700 ? mobilePoses : desktopPoses;
+      const from = poses[Math.min(stage, poses.length - 1)];
+      const to = poses[Math.min(nextStage, poses.length - 1)];
+      chicken.style.setProperty("--story-x", `${mix(from.x, to.x, eased).toFixed(2)}vw`);
+      chicken.style.setProperty("--story-y", `${mix(from.y, to.y, eased).toFixed(2)}vh`);
+      chicken.style.setProperty("--story-scale", mix(from.scale, to.scale, eased).toFixed(3));
+      chicken.style.setProperty("--story-rotate", `${mix(from.rotate, to.rotate, eased).toFixed(2)}deg`);
+      chicken.style.setProperty("--story-opacity", mix(from.opacity, to.opacity, eased).toFixed(3));
+      storyStops.forEach((section, index) => section.classList.toggle("story-current", index === stage || index === nextStage));
+    };
     const updateParallax = () => {
       const viewportCenter = window.innerHeight / 2;
       parallaxNodes.forEach((node) => {
@@ -72,6 +118,7 @@ function Index() {
         const offset = (rect.top + rect.height / 2 - viewportCenter) * speed;
         node.style.setProperty("--parallax-y", `${offset.toFixed(2)}px`);
       });
+      updateStoryChicken();
       frame = 0;
     };
     const onScroll = () => {
@@ -101,6 +148,11 @@ function Index() {
 
       <div className="cursor-dot" aria-hidden="true" />
 
+      <div ref={storyChickenRef} className={`story-chicken ${menuOpen ? "story-chicken-hidden" : ""}`} aria-hidden="true">
+        <div className="story-chicken-orbit"><img src={drumstickAsset.url} alt="" /></div>
+        <span>FOLLOW<br />THE CRUNCH!</span>
+      </div>
+
       <header className="site-header">
         <a href="#top" className="brand-mark" aria-label="LABBAIK Chicken home">
           <img src={labbaikLogoAsset.url} alt="LABBAIK Chicken" />
@@ -120,14 +172,13 @@ function Index() {
         ))}
       </div>
 
-      <section id="top" className="hero-section">
+      <section id="top" className="hero-section" data-story-stop>
         <div className="hero-kicker" data-parallax data-speed="-0.08">READY TO CRUNCH!</div>
         <h1 className="hero-title" aria-label="The First Oven Fried Chicken">
           <span>THE FIRST</span><span>OVEN FRIED</span><span className="hero-outline">CHICKEN</span>
         </h1>
         <div className="sticker sticker-left" data-parallax data-speed="0.1">LEBIH<br />SEHAT</div>
         <div className="sticker sticker-right" data-parallax data-speed="-0.12">REN­YAH<br />& HALAL</div>
-        <div className="hero-chicken-parallax" data-parallax data-speed="0.16"><img src={drumstickAsset.url} alt="Ayam oven-fried renyah LABBAIK Chicken" className="hero-chicken" /></div>
         <div className="hero-eye eye-left" /><div className="hero-eye eye-right" />
         <div className="hero-bottom">
           <p>Ayam crispy yang melewati proses oven membuat minyak berkurang dan lebih sehat.</p>
@@ -136,7 +187,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="classic-section" id="tentang">
+      <section className="classic-section" id="tentang" data-story-stop>
         <div data-reveal className="reveal-up">
           <div className="stamp">OUR SIGNATURE</div>
           <h2>CRISPY, JUICY<br />FULLY LOADED</h2>
@@ -151,7 +202,7 @@ function Index() {
       </section>
 
       <WaveDivider tone="red" />
-      <section className="experience-section">
+      <section className="experience-section" data-story-stop>
         <div className="corner-notes left-note"><b>LESS OIL</b><span>OVEN-FRIED</span><span>ALWAYS FRESH</span></div>
         <div className="corner-notes right-note"><b>100% HALAL</b><span>HYGIENIC</span><span>TRUE CRUNCH</span></div>
         <div data-reveal className="reveal-up experience-copy">
@@ -164,7 +215,7 @@ function Index() {
       </section>
 
       <WaveDivider tone="cream" />
-      <section className="quality-section">
+      <section className="quality-section" data-story-stop>
         <div className="quality-copy" data-reveal>
           <div className="stamp">PURE QUALITY</div>
           <h2>EVERY BITE<br />PACKED WITH<br /><span>CRUNCH</span></h2>
@@ -175,7 +226,7 @@ function Index() {
       </section>
 
       <WaveDivider tone="yellow" />
-      <section className="menu-section" id="menu">
+      <section className="menu-section" id="menu" data-story-stop>
         <div className="menu-heading" data-reveal>
           <div className="stamp stamp-dark">MENU KAMI</div>
           <h2>A FAVORITE<br />FOR EVERYONE</h2>
@@ -206,7 +257,7 @@ function Index() {
       </section>
 
       <WaveDivider tone="cream" />
-      <section className="family-section" id="layanan">
+      <section className="family-section" id="layanan" data-story-stop>
         <div className="family-visual" data-reveal data-parallax data-speed="0.08"><img src={chickenSpreadAsset.url} alt="Paket keluarga LABBAIK Chicken" /><span>SHARE THE<br />CRUNCH!</span></div>
         <div className="family-copy" data-reveal>
           <div className="stamp">FEEL AT HOME</div>
@@ -217,7 +268,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="career-strip" id="karier">
+      <section className="career-strip" id="karier" data-story-stop>
         <p>GROW WITH US</p><h2>AYO BELAJAR DAN<br />BEKERJA BERSAMA!</h2>
         <a href="http://forms.gle/3Zn3EHuM5kaeuJFdA" target="_blank" rel="noreferrer">KIRIM LAMARAN <ArrowUpRight /></a>
       </section>
