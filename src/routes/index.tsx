@@ -80,7 +80,7 @@ function Index() {
       { x: 50, y: 58, scale: 0.68, rotate: -6, opacity: 0.94 },
       { x: 21, y: 67, scale: 0.48, rotate: -27, opacity: 0.88 },
       { x: 78, y: 68, scale: 0.46, rotate: 19, opacity: 0.88 },
-      { x: 27, y: 70, scale: 0.55, rotate: -8, opacity: 0.84 },
+      { x: 91, y: 61, scale: 0.44, rotate: -8, opacity: 0.82 },
       { x: 50, y: 84, scale: 0.35, rotate: 7, opacity: 0 },
     ];
     const mix = (from: number, to: number, amount: number) => from + (to - from) * amount;

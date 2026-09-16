@@ -7,4 +7,4 @@
 - [x] Add smooth per-element parallax and staggered entrances across sections
 - [x] Verify motion and layout on desktop and mobile
 - [x] Turn the main chicken into a scroll-led storytelling character
-- [ ] Verify the chicken journey at each section on desktop and mobile
+- [x] Verify the chicken journey at each section on desktop and mobile
