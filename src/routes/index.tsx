@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import drumstickAsset from "@/assets/Gambar_Codex_15_Sep_2026_18.55.17.png.asset.json";
 import chickenPartyAsset from "@/assets/Gambar_Codex_15_Sep_2026_14.09.01.png.asset.json";
 import chickenSpreadAsset from "@/assets/Gambar_Codex_15_Sep_2026_14.10.53.png.asset.json";
+import labbaikLogoAsset from "@/assets/labbaik-chicken-logo.png.asset.json";
 
 const orderUrl = "https://esborder.qs.esb.co.id/labbaikchicken";
 
@@ -102,7 +103,7 @@ function Index() {
 
       <header className="site-header">
         <a href="#top" className="brand-mark" aria-label="LABBAIK Chicken home">
-          LABBAIK<span>CHICKEN</span>
+          <img src={labbaikLogoAsset.url} alt="LABBAIK Chicken" />
         </a>
         <div className="header-actions">
           <a className="pill pill-solid" href={orderUrl} target="_blank" rel="noreferrer">ORDER</a>
