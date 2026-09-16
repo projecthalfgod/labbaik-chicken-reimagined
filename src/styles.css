@@ -206,7 +206,7 @@ h2 { margin:28px 0; font:900 clamp(3.4rem,8.4vw,8.8rem)/.85 var(--font-display);
 .chicken-collage { position:relative;height:38vw;min-height:380px;margin-top:6vw; }
 .photo-card { position:absolute;width:37%;padding:13px;background:var(--cream);border:4px solid var(--ink);box-shadow:12px 15px 0 color-mix(in oklab,var(--ink) 25%,transparent);translate:0 var(--parallax-y,0);transition:opacity .8s,translate .12s linear,scale .9s cubic-bezier(.2,.8,.2,1); }
 .photo-card img{width:100%;aspect-ratio:1.3;object-fit:contain;background:var(--sun)}
-.card-one{left:5%;top:7%;transform:rotate(-9deg)}.card-two{left:33%;z-index:2;transform:rotate(4deg)}.card-three{right:4%;top:10%;transform:rotate(11deg)}
+.card-one{left:5%;top:7%;rotate:-9deg}.card-two{left:33%;z-index:2;rotate:4deg}.card-three{right:4%;top:10%;rotate:11deg}
 .wave{height:120px;position:relative;z-index:2;margin-top:-80px;overflow:hidden;pointer-events:none}.wave-runner{position:absolute;inset:0;display:flex;width:200%;animation:wave-drift 10s linear infinite;will-change:transform}.wave svg{display:block;width:50%;height:100%;flex:none}.wave path{fill:currentColor}.wave-red{color:var(--hot)}
 .experience-section { min-height:115vh;background:var(--hot);color:var(--cream);position:relative;display:grid;place-items:center;text-align:center;padding:10vw 3vw 0; }
 .stamp-light{background:var(--cream);color:var(--hot);outline-color:var(--cream);border-color:var(--hot)}
