@@ -94,14 +94,22 @@ function Index() {
         return index === 0 ? absoluteTop : absoluteTop + bounds.height * 0.48;
       });
       let stage = 0;
-      while (stage < anchors.length - 1 && viewportMarker > anchors[stage + 1]) stage += 1;
+      while (stage < anchors.length - 1) {
+        const followingAnchor = anchors[stage + 1];
+        if (followingAnchor === undefined || viewportMarker <= followingAnchor) break;
+        stage += 1;
+      }
       const nextStage = Math.min(stage + 1, anchors.length - 1);
-      const span = Math.max(1, anchors[nextStage] - anchors[stage]);
-      const rawProgress = Math.min(1, Math.max(0, (viewportMarker - anchors[stage]) / span));
+      const currentAnchor = anchors[stage];
+      const nextAnchor = anchors[nextStage];
+      if (currentAnchor === undefined || nextAnchor === undefined) return;
+      const span = Math.max(1, nextAnchor - currentAnchor);
+      const rawProgress = Math.min(1, Math.max(0, (viewportMarker - currentAnchor) / span));
       const eased = rawProgress * rawProgress * (3 - 2 * rawProgress);
       const poses = window.innerWidth <= 700 ? mobilePoses : desktopPoses;
       const from = poses[Math.min(stage, poses.length - 1)];
       const to = poses[Math.min(nextStage, poses.length - 1)];
+      if (!from || !to) return;
       chicken.style.setProperty("--story-x", `${mix(from.x, to.x, eased).toFixed(2)}vw`);
       chicken.style.setProperty("--story-y", `${mix(from.y, to.y, eased).toFixed(2)}vh`);
       chicken.style.setProperty("--story-scale", mix(from.scale, to.scale, eased).toFixed(3));
